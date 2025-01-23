@@ -7,8 +7,11 @@ def clean_zipcode(zipcode)
 end
 
 def clean_phone_numbers(number)
-  if number.length >= 10
-    number.gsub(/[()-.  ]/, '')
+  number = number.gsub(/[()-.  ]/, '')
+  if number.length == 10
+    number
+  elsif number.length == 11 && number[0] == 1
+    number[1..-1]
   else
     nil
   end
@@ -16,7 +19,7 @@ end
 
 def legislators_by_zipcode(zip)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
-  civic_info.key = 'AIzaSyClRzDqDh5MsXwnCWi0kOiiBivP6JsSyBw'
+  civic_info.key = File.read('secret.key').strip
 
   begin
     civic_info.representative_info_by_address(

@@ -21,6 +21,10 @@ def get_hour(date_time)
   Time.parse(date_time.split(' ')[1]).hour
 end
 
+def get_day_of_week(date_time)
+  Date.strptime(date_time.split(' ')[0], '%m/%d/%Y').wday
+end
+
 def legislators_by_zipcode(zip)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = File.read('secret.key').strip
@@ -58,6 +62,7 @@ template_letter = File.read('form_letter.erb')
 erb_template = ERB.new template_letter
 
 reg_times = {}
+reg_days = {}
 contents.each do |row|
   id = row[0]
   name = row[:first_name]
@@ -65,11 +70,14 @@ contents.each do |row|
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcode)
   hour = get_hour(row[:regdate])
+  day_of_week = get_day_of_week(row[:regdate])
 
   reg_times[hour] ? reg_times[hour] += 1 : reg_times[hour] = 1
+  reg_days[day_of_week] ? reg_days[day_of_week] += 1 : reg_days[day_of_week] = 1
  # form_letter = erb_template.result(binding)
 
  # save_thank_you_letter(id,form_letter)
 end
 
 p reg_times
+p reg_days

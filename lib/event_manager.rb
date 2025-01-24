@@ -17,6 +17,10 @@ def clean_phone_numbers(number)
   end
 end
 
+def get_hour(date_time)
+  Time.parse(date_time.split(' ')[1]).hour
+end
+
 def legislators_by_zipcode(zip)
   civic_info = Google::Apis::CivicinfoV2::CivicInfoService.new
   civic_info.key = File.read('secret.key').strip
@@ -59,8 +63,7 @@ contents.each do |row|
   number = clean_phone_numbers(row[:homephone])
   zipcode = clean_zipcode(row[:zipcode])
   legislators = legislators_by_zipcode(zipcode)
-
-  puts number
+  hour = get_hour(row[:regdate])
 
  # form_letter = erb_template.result(binding)
 
